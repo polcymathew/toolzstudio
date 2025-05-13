@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Image Resizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4faff;
+      color: #1a73e8;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .upload-area {
+      border: 2px dashed #1a73e8;
+      background: #e9f5ff;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .upload-area.dragover {
+      background-color: #d0ebff;
+    }
+
+    .controls label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cce5ff;
+      border-radius: 6px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      background-color: #1a73e8;
+      color: white;
+      padding: 12px;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005bb5;
+    }
+
+    .preview-list {
+      margin-top: 20px;
+    }
+
+    .preview-item {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .preview-item img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    a.download-link {
+      display: inline-block;
+      margin-top: 8px;
+      text-decoration: none;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Advanced Image Resizer</h1>
+
+    <div class="upload-area" id="dropArea">
+      <p>Click or Drag & Drop Images Here</p>
+      <input type="file" id="imageInput" accept="image/*" multiple hidden />
+    </div>
+
+    <div class="controls">
+      <label>Resize Width (px): <input type="number" id="resizeWidth" placeholder="e.g., 800" /></label>
+      <label>Resize Height (px): <input type="number" id="resizeHeight" placeholder="e.g., 600" /></label>
+      <label><input type="checkbox" id="maintainAspect" checked /> Maintain Aspect Ratio</label>
+
+      <label>Output Format:
+        <select id="format">
+          <option value="jpeg">JPG</option>
+          <option value="png">PNG</option>
+          <option value="webp">WEBP</option>
+        </select>
+      </label>
+
+      <label>Compression Quality: <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.8" /></label>
+    </div>
+
+    <button id="resizeBtn">Resize & Download</button>
+
+    <div class="preview-list" id="previewList"></div>
+  </div>
+
+  <script>
+    const dropArea = document.getElementById("dropArea");
+    const imageInput = document.getElementById("imageInput");
+    const resizeBtn = document.getElementById("resizeBtn");
+    const previewList = document.getElementById("previewList");
+
+    const resizeWidth = document.getElementById("resizeWidth");
+    const resizeHeight = document.getElementById("resizeHeight");
+    const maintainAspect = document.getElementById("maintainAspect");
+    const formatSelect = document.getElementById("format");
+    const qualityInput = document.getElementById("quality");
+
+    let imageFiles = [];
+
+    dropArea.addEventListener("click", () => imageInput.click());
+
+    dropArea.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropArea.classList.add("dragover");
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+      dropArea.classList.remove("dragover");
+    });
+
+    dropArea.addEventListener("drop", e => {
+      e.preventDefault();
+      dropArea.classList.remove("dragover");
+      handleFiles(e.dataTransfer.files);
+    });
+
+    imageInput.addEventListener("change", () => {
+      handleFiles(imageInput.files);
+    });
+
+    function handleFiles(files) {
+      for (let file of files) {
+        if (!file.type.startsWith("image/")) continue;
+        imageFiles.push(file);
+      }
+      alert(`${files.length} image(s) ready for resizing.`);
+    }
+
+    resizeBtn.addEventListener("click", () => {
+      if (imageFiles.length === 0) {
+        alert("Please upload at least one image.");
+        return;
+      }
+
+      previewList.innerHTML = "";
+
+      imageFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            let targetWidth = parseInt(resizeWidth.value) || img.width;
+            let targetHeight = parseInt(resizeHeight.value) || img.height;
+
+            if (maintainAspect.checked && resizeWidth.value && !resizeHeight.value) {
+              targetHeight = Math.round((img.height / img.width) * targetWidth);
+            } else if (maintainAspect.checked && resizeHeight.value && !resizeWidth.value) {
+              targetWidth = Math.round((img.width / img.height) * targetHeight);
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+            const format = formatSelect.value;
+            const mimeTypes = {
+              jpeg: "image/jpeg",
+              png: "image/png",
+              webp: "image/webp"
+            };
+
+            canvas.toBlob(blob => {
+              const url = URL.createObjectURL(blob);
+
+              const wrapper = document.createElement("div");
+              wrapper.className = "preview-item";
+              wrapper.innerHTML = `
+                <p><strong>${file.name}</strong></p>
+                <img src="${url}" alt="Resized Image"/>
+                <a class="download-link" href="${url}" download="resized-${file.name.split('.')[0]}.${format}">Download</a>
+              `;
+              previewList.appendChild(wrapper);
+            }, mimeTypes[format], parseFloat(qualityInput.value));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+</body>
+</html>
