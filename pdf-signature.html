@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Signature Tool</title>
+  <style>
+    :root {
+      --primary-color: #007BFF;
+      --secondary-color: #FFFFFF;
+      --accent-color: #F8F9FA;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--accent-color);
+      color: #333;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--primary-color);
+      background-color: var(--secondary-color);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-area.dragover {
+      background-color: var(--accent-color);
+    }
+
+    canvas, #pdf-preview {
+      border: 1px solid #ccc;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .toolbar button, .toolbar select, .toolbar input {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: var(--secondary-color);
+      cursor: pointer;
+    }
+
+    .signature-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--secondary-color);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      display: none;
+      z-index: 999;
+    }
+
+    .signature-tabs {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .signature-tabs button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      background-color: var(--accent-color);
+    }
+
+    .signature-content {
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #pdf-canvas {
+      max-width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .toolbar {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>PDF Signature Tool</header>
+  <div class="container">
+    <div class="upload-area" id="upload-area">
+      Drag & Drop PDF here or <input type="file" id="file-input" accept="application/pdf">
+    </div>
+    <div class="toolbar">
+      <button onclick="openSignatureModal()">Add Signature</button>
+      <button onclick="saveSignedPDF()">Download Signed PDF</button>
+      <button onclick="resetEditor()">Reset</button>
+    </div>
+    <canvas id="pdf-canvas"></canvas>
+  </div>
+
+  <!-- Signature Modal -->
+  <div class="signature-modal" id="signature-modal">
+    <div class="signature-tabs">
+      <button onclick="switchTab('draw')">Draw</button>
+      <button onclick="switchTab('type')">Type</button>
+      <button onclick="switchTab('upload')">Upload</button>
+    </div>
+    <div class="signature-content" id="draw">
+      <canvas id="signature-pad" width="300" height="150" style="border:1px solid #ccc;"></canvas><br>
+      <button onclick="saveSignatureFromCanvas()">Save</button>
+    </div>
+    <div class="signature-content hidden" id="type">
+      <input type="text" id="typed-signature" placeholder="Type your signature"><br>
+      <button onclick="saveTypedSignature()">Save</button>
+    </div>
+    <div class="signature-content hidden" id="upload">
+      <input type="file" id="upload-signature" accept="image/*"><br>
+      <button onclick="saveUploadedSignature()">Save</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script>
+    // Core logic will be added here, handling:
+    // - PDF rendering using PDF.js
+    // - Signature drawing with Canvas API
+    // - Signature embedding using pdf-lib.js
+    // - Touch support and drag/drop events
+    // - UI event handlers
+
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+    uploadArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      handlePDFFile(file);
+    });
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      handlePDFFile(file);
+    }
+
+    async function handlePDFFile(file) {
+      if (!file || file.type !== 'application/pdf') {
+        alert('Please upload a valid PDF file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const typedArray = new Uint8Array(this.result);
+        const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        await page.render(renderContext).promise;
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Signature Modal Logic
+    function openSignatureModal() {
+      document.getElementById('signature-modal').style.display = 'block';
+    }
+    function switchTab(tab) {
+      document.querySelectorAll('.signature-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tab).classList.remove('hidden');
+    }
+    function saveSignatureFromCanvas() {
+      alert('Signature saved (drawing). Embed logic to be implemented.');
+      closeSignatureModal();
+    }
+    function saveTypedSignature() {
+      alert('Signature saved (typed). Embed logic to be implemented.');
+      closeSignatureModal();
+    }
+    function saveUploadedSignature() {
+      alert('Signature saved (uploaded image). Embed logic to be implemented.');
+      closeSignatureModal();
+    }
+    function closeSignatureModal() {
+      document.getElementById('signature-modal').style.display = 'none';
+    }
+    function saveSignedPDF() {
+      alert('Download logic to be implemented.');
+    }
+    function resetEditor() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
