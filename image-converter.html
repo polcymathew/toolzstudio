@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Converter Tool</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #f4faff;
+      color: #1a73e8;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .upload-box input {
+      display: none;
+    }
+
+    .upload-box label {
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .preview {
+      margin: 15px 0;
+      min-height: 200px;
+      border: 2px dashed #1a73e8;
+      border-radius: 8px;
+      padding: 10px;
+      background-color: #f0f8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 5px;
+    }
+
+    .options {
+      margin: 20px 0;
+    }
+
+    select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #005bb5;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .upload-box label,
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Converter Tool</h1>
+
+    <div class="upload-box">
+      <input type="file" id="imageInput" accept="image/*"/>
+      <label for="imageInput">Choose an Image</label>
+    </div>
+
+    <div class="preview" id="previewBox">
+      <p>No image selected</p>
+    </div>
+
+    <div class="options">
+      <label for="format">Convert to:</label>
+      <select id="format">
+        <option value="jpeg">JPG</option>
+        <option value="png">PNG</option>
+        <option value="webp">WEBP</option>
+      </select>
+    </div>
+
+    <button id="convertBtn">Convert & Download</button>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const previewBox = document.getElementById('previewBox');
+    const convertBtn = document.getElementById('convertBtn');
+    const formatSelect = document.getElementById('format');
+    let currentImage = null;
+
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewBox.innerHTML = `<img src="${reader.result}" alt="Preview"/>`;
+        currentImage = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    convertBtn.addEventListener('click', () => {
+      if (!currentImage) {
+        alert("Please select an image first!");
+        return;
+      }
+
+      const format = formatSelect.value;
+      const img = new Image();
+      img.src = currentImage;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const mime = {
+          jpeg: 'image/jpeg',
+          png: 'image/png',
+          webp: 'image/webp'
+        }[format];
+
+        canvas.toBlob(blob => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `converted-image.${format}`;
+          link.click();
+        }, mime, 0.8); // 0.8 = compression quality
+      };
+    });
+  </script>
+</body>
+</html>
