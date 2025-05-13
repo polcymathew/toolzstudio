@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bulk Image Cropper - ToolzStudio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Cropper.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- FileSaver.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <!-- JSZip -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #007bff;
+      --white: #ffffff;
+      --gray: #f8f9fa;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--gray);
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .uploader {
+      border: 2px dashed var(--primary);
+      background-color: var(--white);
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+
+    .uploader:hover {
+      background-color: #e9f3ff;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    img#image-preview {
+      max-width: 100%;
+      border-radius: 6px;
+      max-height: 400px;
+      margin-top: 10px;
+    }
+
+    .controls, .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .controls label {
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    select, input[type="range"] {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .buttons .reset {
+      background-color: #6c757d;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    @media screen and (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 Bulk Image Cropper</h1>
+
+    <label class="uploader" for="fileInput">
+      <strong>Click to Upload or Drag & Drop</strong><br>
+      <small>Supports JPG, PNG, WebP — Multiple Files Allowed</small>
+      <input type="file" id="fileInput" accept="image/*" multiple />
+    </label>
+
+    <div id="crop-area" style="display:none;">
+      <img id="image-preview" />
+      <div class="controls">
+        <label>
+          Aspect Ratio
+          <select id="aspectRatio">
+            <option value="NaN">Free</option>
+            <option value="1">1:1</option>
+            <option value="4/3">4:3</option>
+            <option value="16/9">16:9</option>
+          </select>
+        </label>
+        <label>
+          Format
+          <select id="format">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </label>
+        <label>
+          Quality
+          <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.9" />
+        </label>
+      </div>
+
+      <div class="buttons">
+        <button id="save-btn">Save Crop</button>
+        <button id="next-btn">Next Image</button>
+        <button class="reset" id="reset-btn">Reset</button>
+      </div>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    let files = [], currentIndex = 0, cropper, zip = new JSZip(), filenames = [];
+
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('image-preview');
+    const cropArea = document.getElementById('crop-area');
+    const status = document.getElementById('status');
+
+    const aspectRatioSelect = document.getElementById('aspectRatio');
+    const formatSelect = document.getElementById('format');
+    const qualityRange = document.getElementById('quality');
+
+    document.getElementById('save-btn').onclick = () => {
+      cropper.getCroppedCanvas().toBlob(blob => {
+        let name = files[currentIndex].name.replace(/\.[^/.]+$/, "");
+        let format = formatSelect.value;
+        let ext = format.split("/")[1];
+        let quality = parseFloat(qualityRange.value);
+
+        cropper.getCroppedCanvas().toBlob(blob => {
+          zip.file(`${name}_cropped.${ext}`, blob);
+          filenames.push(`${name}_cropped.${ext}`);
+          status.innerText = `Saved ${filenames.length}/${files.length}`;
+        }, format, quality);
+      }, formatSelect.value, parseFloat(qualityRange.value));
+    };
+
+    document.getElementById('next-btn').onclick = () => {
+      if (currentIndex < files.length - 1) {
+        currentIndex++;
+        loadImage(files[currentIndex]);
+      } else {
+        zip.generateAsync({ type: "blob" }).then(content => {
+          saveAs(content, "cropped_images.zip");
+          status.innerText = "✅ All images saved to ZIP!";
+          cropArea.style.display = 'none';
+        });
+      }
+    };
+
+    document.getElementById('reset-btn').onclick = () => {
+      cropper.destroy();
+      cropArea.style.display = 'none';
+      files = [];
+      currentIndex = 0;
+      zip = new JSZip();
+      filenames = [];
+      status.innerText = "";
+    };
+
+    fileInput.addEventListener('change', (e) => {
+      files = Array.from(e.target.files);
+      if (files.length > 0) {
+        currentIndex = 0;
+        loadImage(files[currentIndex]);
+      }
+    });
+
+    function loadImage(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        cropArea.style.display = 'block';
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(preview, {
+          aspectRatio: NaN,
+          viewMode: 1,
+        });
+        aspectRatioSelect.addEventListener('change', () => {
+          cropper.setAspectRatio(eval(aspectRatioSelect.value));
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
