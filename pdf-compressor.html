@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Compressor - ToolzStudio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: #F8F9FA;
+      color: #333;
+    }
+    header {
+      background-color: #007BFF;
+      color: white;
+      padding: 1em;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2em auto;
+      background: white;
+      border-radius: 8px;
+      padding: 1.5em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .upload-box {
+      border: 2px dashed #007BFF;
+      padding: 2em;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      background: #E9F3FF;
+      cursor: pointer;
+    }
+    .upload-box.dragover {
+      background: #D0E8FF;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+    .controls select, .controls button {
+      flex: 1;
+      padding: 0.5em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .file-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1em;
+      margin-bottom: 1em;
+      background: #FAFAFA;
+    }
+    .progress {
+      height: 8px;
+      background: #007BFF;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .btn-download {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 0.5em;
+    }
+    @media (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>PDF Compressor - ToolzStudio</header>
+
+<div class="container">
+  <div class="upload-box" id="uploadBox">
+    Drag & drop PDF files here or click to upload
+    <input type="file" id="fileInput" accept="application/pdf" multiple hidden>
+  </div>
+
+  <div class="controls">
+    <select id="compressionLevel">
+      <option value="low">Low Compression (High Quality)</option>
+      <option value="medium" selected>Medium Compression</option>
+      <option value="high">High Compression (Smallest Size)</option>
+    </select>
+    <button onclick="processFiles()">Compress PDFs</button>
+  </div>
+
+  <div id="fileList"></div>
+</div>
+
+<!-- JS Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script>
+  const uploadBox = document.getElementById('uploadBox');
+  const fileInput = document.getElementById('fileInput');
+  const fileList = document.getElementById('fileList');
+  const compressionLevel = document.getElementById('compressionLevel');
+  let pdfFiles = [];
+
+  uploadBox.addEventListener('click', () => fileInput.click());
+  uploadBox.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadBox.classList.add('dragover');
+  });
+  uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+  uploadBox.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadBox.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+  function handleFiles(files) {
+    for (let file of files) {
+      if (file.type === 'application/pdf') {
+        pdfFiles.push(file);
+        const div = document.createElement('div');
+        div.className = 'file-card';
+        div.innerHTML = `
+          <strong>${file.name}</strong><br>
+          Original Size: ${(file.size / 1024).toFixed(2)} KB
+          <div class="progress" id="progress-${file.name.replace(/[^a-z0-9]/gi, '')}"></div>
+          <div id="status-${file.name.replace(/[^a-z0-9]/gi, '')}"></div>
+        `;
+        fileList.appendChild(div);
+      }
+    }
+  }
+
+  async function processFiles() {
+    for (let file of pdfFiles) {
+      const cleanName = file.name.replace(/[^a-z0-9]/gi, '');
+      document.getElementById(`progress-${cleanName}`).style.width = '10%';
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const originalPdfBytes = new Uint8Array(reader.result);
+        const pdfDoc = await PDFLib.PDFDocument.load(originalPdfBytes);
+        document.getElementById(`progress-${cleanName}`).style.width = '40%';
+
+        // Strip metadata
+        pdfDoc.setTitle('');
+        pdfDoc.setAuthor('');
+        pdfDoc.setSubject('');
+        pdfDoc.setKeywords([]);
+        pdfDoc.setProducer('');
+        pdfDoc.setCreator('');
+        pdfDoc.setCreationDate(undefined);
+        pdfDoc.setModificationDate(undefined);
+
+        // Adjust compression level
+        const saveOptions = {
+          useObjectStreams: false,
+          addDefaultPage: false,
+        };
+
+        if (compressionLevel.value === 'high') saveOptions.compress = true;
+        else if (compressionLevel.value === 'low') saveOptions.compress = false;
+
+        const compressedPdfBytes = await pdfDoc.save(saveOptions);
+        document.getElementById(`progress-${cleanName}`).style.width = '80%';
+
+        const compressedSize = (compressedPdfBytes.byteLength / 1024).toFixed(2);
+        const btn = document.createElement('button');
+        btn.className = 'btn-download';
+        btn.innerText = `Download Compressed (${compressedSize} KB)`;
+        btn.onclick = () => saveAs(new Blob([compressedPdfBytes], { type: 'application/pdf' }), 'compressed-' + file.name);
+
+        const statusDiv = document.getElementById(`status-${cleanName}`);
+        statusDiv.innerHTML = '';
+        statusDiv.appendChild(btn);
+        document.getElementById(`progress-${cleanName}`).style.width = '100%';
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  }
+</script>
+
+</body>
+</html>
