@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Document Converter with Preview</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #F8F9FA;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background-color: #FFFFFF;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #007BFF;
+      text-align: center;
+    }
+    .upload-area {
+      border: 2px dashed #007BFF;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      background-color: #E9F7FF;
+    }
+    .upload-area:hover {
+      background-color: #D0ECFF;
+    }
+    .format-selection {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #output-format {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    #convert-button {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.75rem 1.5rem;
+      background-color: #007BFF;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #convert-button:hover {
+      background-color: #0056b3;
+    }
+    #preview-area {
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: #F8F9FA;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      white-space: pre-wrap;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    #progress-area, #download-area {
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Document Converter Tool with Preview</h1>
+    <div class="upload-area" id="upload-area">
+      <p>Drag & Drop files here or click to upload</p>
+      <input type="file" id="file-input" multiple accept=".docx,.pdf,.txt,.odt,.rtf,.html" style="display: none;" />
+    </div>
+    <div class="format-selection">
+      <label for="output-format">Convert to:</label>
+      <select id="output-format">
+        <option value="pdf">PDF</option>
+        <option value="txt">TXT</option>
+        <option value="html">HTML</option>
+      </select>
+    </div>
+    <div id="preview-area" aria-label="Document Preview">Preview will appear here...</div>
+    <button id="convert-button">Convert</button>
+    <div id="progress-area"></div>
+    <div id="download-area"></div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+  <script>
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
+    const convertButton = document.getElementById('convert-button');
+    const outputFormat = document.getElementById('output-format');
+    const previewArea = document.getElementById('preview-area');
+    const progressArea = document.getElementById('progress-area');
+    const downloadArea = document.getElementById('download-area');
+
+    let filesToConvert = [];
+    let previewContent = [];
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = '#D0ECFF';
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.backgroundColor = '#E9F7FF';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = '#E9F7FF';
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+      filesToConvert = [];
+      previewContent = [];
+      previewArea.textContent = "Generating preview...";
+      for (let file of files) {
+        if (/\.(docx|pdf|txt|odt|rtf|html)$/i.test(file.name)) {
+          filesToConvert.push(file);
+        }
+      }
+      generatePreviews(filesToConvert);
+    }
+
+    async function generatePreviews(files) {
+      previewArea.innerHTML = '';
+      for (let file of files) {
+        const name = file.name;
+        const content = await extractText(file);
+        previewContent.push({ name, content });
+        const div = document.createElement('div');
+        div.style.marginBottom = '1rem';
+        div.innerHTML = `<strong>${name}</strong><br><div>${content.substring(0, 1000)}${content.length > 1000 ? '... (truncated)' : ''}</div>`;
+        previewArea.appendChild(div);
+      }
+    }
+
+    convertButton.addEventListener('click', async () => {
+      const format = outputFormat.value;
+      const zip = new JSZip();
+      downloadArea.innerHTML = '';
+      progressArea.innerText = 'Converting... Please wait.';
+
+      for (let fileData of previewContent) {
+        const { name, content } = fileData;
+        const fileName = name.split('.').slice(0, -1).join('.');
+        const converted = await convertContent(content, format);
+        if (converted) {
+          zip.file(fileName + '.' + format, converted);
+        }
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveAs(blob, 'converted_documents.zip');
+      progressArea.innerText = 'Conversion complete!';
+    });
+
+    async function extractText(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const textDecoder = new TextDecoder();
+
+      if (file.name.endsWith('.docx')) {
+        return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value.replace(/<[^>]+>/g, ' '));
+      } else if (file.name.endsWith('.txt') || file.name.endsWith('.html')) {
+        return textDecoder.decode(arrayBuffer);
+      } else if (file.name.endsWith('.odt')) {
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        const contentXML = await zip.file('content.xml').async('string');
+        return contentXML.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      } else if (file.name.endsWith('.rtf')) {
+        const text = textDecoder.decode(arrayBuffer);
+        return text.replace(/\\[a-z]+\\d* ?/g, '').replace(/{|}/g, '').replace(/\\'../g, '');
+      } else {
+        return '[Preview not available for this file type]';
+      }
+    }
+
+    async function convertContent(text, format) {
+      if (format === 'txt') {
+        return text;
+      } else if (format === 'html') {
+        return `<html><body>${text}</body></html>`;
+      } else if (format === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const lines = doc.splitTextToSize(text, 180);
+        doc.text(lines, 10, 10);
+        return doc.output('blob');
+      }
+    }
+  </script>
+</body>
+</html>
