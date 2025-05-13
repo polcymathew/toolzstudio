@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Image to Text (OCR) Tool - ToolzStudio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tesseract.js -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #007bff;
+      --white: #ffffff;
+      --gray: #f8f9fa;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: var(--gray);
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+    }
+
+    .panel {
+      background: var(--white);
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1 1 400px;
+      min-width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .uploader {
+      border: 2px dashed var(--primary);
+      text-align: center;
+      padding: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: var(--gray);
+    }
+
+    .uploader:hover {
+      background-color: #e6f0ff;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    img#imagePreview {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      font-size: 16px;
+    }
+
+    select, button {
+      padding: 10px;
+      margin: 5px 5px 0 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #progress {
+      margin-top: 10px;
+      color: green;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>📷 Image to Text (OCR) Tool</h1>
+
+<div class="container">
+  <div class="panel">
+    <label class="uploader" for="imageInput">
+      Click or Drag & Drop Image Here<br />
+      <small>(JPG, PNG, GIF, BMP)</small>
+      <input type="file" id="imageInput" accept="image/*" />
+    </label>
+    <img id="imagePreview" src="" alt="Preview" style="display:none;" />
+    <div>
+      <label for="langSelect">OCR Language:</label>
+      <select id="langSelect">
+        <option value="eng">English</option>
+        <option value="spa">Spanish</option>
+        <option value="fra">French</option>
+        <option value="deu">German</option>
+      </select>
+    </div>
+    <button id="runOcr">🧠 Extract Text</button>
+    <div id="progress"></div>
+  </div>
+
+  <div class="panel">
+    <label for="outputText">📝 Extracted Text</label>
+    <textarea id="outputText" placeholder="OCR result will appear here..."></textarea>
+    <div>
+      <button onclick="copyText()">📋 Copy</button>
+      <button onclick="exportText()">📄 Export TXT</button>
+      <button onclick="exportDoc()">🗎 Export DOC</button>
+      <button onclick="exportPDF()">📑 Export PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById('imageInput');
+  const imagePreview = document.getElementById('imagePreview');
+  const runOcr = document.getElementById('runOcr');
+  const outputText = document.getElementById('outputText');
+  const langSelect = document.getElementById('langSelect');
+  const progress = document.getElementById('progress');
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      imagePreview.src = reader.result;
+      imagePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  runOcr.addEventListener('click', () => {
+    if (!imageInput.files[0]) {
+      alert("Please upload an image first.");
+      return;
+    }
+
+    progress.textContent = "Processing OCR...";
+    Tesseract.recognize(
+      imageInput.files[0],
+      langSelect.value,
+      {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            progress.textContent = `Progress: ${Math.round(m.progress * 100)}%`;
+          }
+        }
+      }
+    ).then(({ data: { text } }) => {
+      outputText.value = text;
+      progress.textContent = "✅ OCR complete!";
+    }).catch(err => {
+      progress.textContent = "❌ Error during OCR.";
+      console.error(err);
+    });
+  });
+
+  function copyText() {
+    navigator.clipboard.writeText(outputText.value)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(() => alert("Copy failed."));
+  }
+
+  function exportText() {
+    const blob = new Blob([outputText.value], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "ocr-output.txt");
+  }
+
+  function exportDoc() {
+    const blob = new Blob(["<html><body>" + outputText.value.replace(/\n/g, "<br>") + "</body></html>"], { type: "application/msword" });
+    saveAs(blob, "ocr-output.doc");
+  }
+
+  function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const text = outputText.value.split("\n");
+    let y = 10;
+    doc.setFontSize(12);
+    text.forEach(line => {
+      doc.text(line, 10, y);
+      y += 7;
+    });
+    doc.save("ocr-output.pdf");
+  }
+</script>
+
+<!-- FileSaver.js for download support -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+</body>
+</html>
