@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToolzStudio - Your Essential Tools All in One Spot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Using Heroicons for demo, you can choose your preferred icon set -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB; /* bg-gray-50 */
+            color: #1F2937; /* text-gray-800 */
+        }
+        .logo-font {
+            font-weight: 600; /* slightly bold */
+            font-size: 1.5rem; /* example size */
+        }
+        .hero-headline {
+            font-size: 2.5rem; /* lg:text-5xl */
+            font-weight: 700;
+        }
+        @media (min-width: 1024px) {
+            .hero-headline {
+                font-size: 3rem;
+            }
+        }
+        .tool-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+        }
+        .btn-primary {
+            background-color: #2563EB; /* bg-blue-600 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #1D4ED8; /* hover:bg-blue-700 */
+        }
+        .section-heading {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .section-subheading {
+            color: #6B7280; /* text-gray-500 */
+            margin-bottom: 2rem;
+        }
+        /* Simple icon placeholders */
+        .tool-icon {
+            font-size: 2rem;
+            color: #2563EB; /* text-blue-600 */
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="logo-font text-gray-800">Tools Wonder</a>
+            <nav class="hidden md:flex space-x-6 items-center">
+                <a href="#" class="text-gray-600 hover:text-blue-600">Home</a>
+                <a href="#tools" class="text-gray-600 hover:text-blue-600">Tools</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600">Contact</a>
+            </nav>
+            <div class="hidden md:block text-sm text-gray-500">
+                <a href="mailto:allseotools83@gmail.com" class="hover:text-blue-600">allseotools83@gmail.com</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Home</a>
+            <a href="#tools" class="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Tools</a>
+            <a href="#contact" class="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Contact</a>
+            <a href="mailto:allseotools83@gmail.com" class="block px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-blue-600">allseotools83@gmail.com</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24 text-center bg-white">
+        <div class="container mx-auto px-4">
+            <h1 class="hero-headline text-gray-800 mb-4">
+                Your Essential Tools for Every Day — All in One Spot
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Convert, calculate, compress, and simplify all your everyday tasks — fast and free.
+            </p>
+            <a href="#tools" class="btn-primary inline-block">Explore Tools</a>
+            <div class="mt-10 flex justify-center space-x-6 text-gray-500">
+                <!-- Simple icons showing tool variety -->
+                <div class="flex flex-col items-center">
+                    <ion-icon name="image-outline" class="text-4xl text-blue-500"></ion-icon>
+                    <span class="text-xs mt-1">Image</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <ion-icon name="document-text-outline" class="text-4xl text-blue-500"></ion-icon>
+                    <span class="text-xs mt-1">Document</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <ion-icon name="code-slash-outline" class="text-4xl text-blue-500"></ion-icon>
+                    <span class="text-xs mt-1">Code</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <ion-icon name="videocam-outline" class="text-4xl text-blue-500"></ion-icon>
+                    <span class="text-xs mt-1">Video (future)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Bar -->
+    <section class="py-12 md:py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto">
+                <input
+                    type="search"
+                    id="tool-search"
+                    placeholder="Search your tool… (e.g., PDF Converter, Image Resizer)"
+                    class="w-full p-4 text-lg border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                />
+                <!-- Live search results would be dynamically populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Tool Sections -->
+    <main id="tools" class="container mx-auto px-4 py-12 md:py-16">
+
+        <!-- Tool Card Component (Reusable Structure) -->
+        <!--
+        <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+            <div class="tool-icon"><ion-icon name="ICON_NAME_HERE"></ion-icon></div>
+            <h3 class="text-lg font-semibold mb-1 text-gray-800">Tool Name</h3>
+            <p class="text-sm text-gray-600 mb-4 h-10">Short 1-line description of the tool's function.</p>
+            <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+        </div>
+        -->
+
+        <!-- 🖼 Image Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🖼 Image Tools</h2>
+            <p class="section-subheading">Manipulate and optimize your images with ease.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- Image Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="sync-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert images between various formats like JPG, PNG, WEBP.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Image Compressor -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="contract-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image Compressor</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Reduce image file size without significant quality loss.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Image Resizer -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="scan-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image Resizer</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Change the dimensions of your images quickly.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Image Cropper -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="crop-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image Cropper</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Crop images to a specific area or aspect ratio.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Image to Text (OCR) -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="text-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image to Text (OCR)</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Extract text content from images accurately.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Image Rotator/Flipper -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="reload-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Image Rotator/Flipper</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Rotate or flip your images horizontally or vertically.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 📄 Document Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">📄 Document Tools</h2>
+            <p class="section-subheading">Manage your PDF and other document files efficiently.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- PDF to Word / Word to PDF -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="document-attach-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">PDF to Word / Word to PDF</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert PDFs to editable Word files and vice-versa.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- PDF Compressor -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="archive-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">PDF Compressor</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Reduce the file size of your PDF documents.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- PDF Merger & Splitter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="git-merge-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">PDF Merger & Splitter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Combine multiple PDFs or split a single PDF into parts.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Document Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="shuffle-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Document Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert various document formats (e.g., DOCX, ODT, TXT).</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- PDF Lock/Unlock -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">PDF Lock/Unlock</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Secure PDFs with passwords or remove existing protection.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- eSign PDF -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="pencil-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">eSign PDF</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Electronically sign your PDF documents securely.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🧮 Calculator Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🧮 Calculator Tools</h2>
+            <p class="section-subheading">Perform various calculations for finance, health, and general use.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- Scientific Calculator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="calculator-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Scientific Calculator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Advanced calculator with scientific functions.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Age Calculator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Age Calculator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Calculate age based on birth date accurately.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- BMI Calculator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="body-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">BMI Calculator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Calculate your Body Mass Index (BMI).</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Loan EMI Calculator -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="cash-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Loan EMI Calculator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Calculate Equated Monthly Installments for loans.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- GST Calculator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="receipt-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">GST Calculator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Calculate Goods and Services Tax amounts.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Currency Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="swap-horizontal-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Currency Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert between different world currencies.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🔤 Text Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🔤 Text Tools</h2>
+            <p class="section-subheading">Format, analyze, and transform your text content effortlessly.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- Text Case Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="text-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Text Case Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Change text to uppercase, lowercase, title case, etc.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Word & Character Counter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="stats-chart-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Word & Character Counter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Count words, characters, sentences, and paragraphs.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Remove Duplicate Lines -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="remove-circle-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Remove Duplicate Lines</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Delete duplicate lines from a block of text.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Text Sorter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="list-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Text Sorter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Sort lines of text alphabetically or numerically.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Text Reverser -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="refresh-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Text Reverser</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Reverse characters, words, or lines of text.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Text Encryptor/Decryptor -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="lock-open-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Text Encryptor/Decryptor</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Encrypt or decrypt text using various algorithms.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🌐 Web/Developer Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🌐 Web/Developer Tools</h2>
+            <p class="section-subheading">Useful utilities for web developers and programmers.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                 <!-- HTML/CSS/JS Minifier -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="code-download-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">HTML/CSS/JS Minifier</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Minify your code to reduce file size and improve speed.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- JSON Formatter & Validator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">JSON Formatter & Validator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Format, beautify, and validate JSON data.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Base64 Encoder/Decoder -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="key-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Base64 Encoder/Decoder</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Encode to or decode from Base64 format.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- URL Encoder/Decoder -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="link-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">URL Encoder/Decoder</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Encode or decode URLs for safe transmission.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Color Picker & Converter (this overlaps, consider consolidating) -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="color-palette-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Color Picker & Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Pick colors and convert between HEX, RGB, HSL.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Regex Tester -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="search-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Regex Tester</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Test and debug your regular expressions online.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🎨 Color Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🎨 Color Tools</h2>
+            <p class="section-subheading">Explore, pick, and convert colors for your design projects.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- Color Picker from Image -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="eyedrop-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Color Picker from Image</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Extract colors from an uploaded image.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- HEX to RGB Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="color-filter-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">HEX to RGB Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert HEX color codes to RGB and vice-versa.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Gradient Generator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="analytics-outline"></ion-icon></div> <!-- Placeholder icon -->
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Gradient Generator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Create beautiful CSS color gradients easily.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Contrast Checker -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="contrast-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Contrast Checker</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Check color contrast for WCAG accessibility.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Palette Generator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="apps-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Palette Generator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Generate harmonious color palettes quickly.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Color Blindness Simulator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="eye-off-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Color Blindness Simulator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">See how your colors appear to colorblind users.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🌍 SEO & Marketing Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🌍 SEO & Marketing Tools</h2>
+            <p class="section-subheading">Optimize your content and analyze your web presence.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                 <!-- Keyword Density Checker -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="search-circle-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Keyword Density Checker</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Analyze keyword frequency in your text content.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Meta Tag Analyzer -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="information-circle-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Meta Tag Analyzer</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Check and analyze meta tags of a webpage.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Word Counter (Duplicate of Text Tools, could be specialized for SEO here) -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="newspaper-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Content Word Counter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Count words in articles for SEO content length.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🛠️ Utility Tools -->
+        <section class="mb-12 md:mb-16">
+            <h2 class="section-heading text-gray-800">🛠️ Utility Tools</h2>
+            <p class="section-subheading">Handy miscellaneous tools for various everyday tasks.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- QR Code Generator & Scanner -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="qr-code-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">QR Code Generator & Scanner</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Create QR codes or scan them from images.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Barcode Generator -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="barcode-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Barcode Generator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Generate various types of barcodes quickly.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- UUID Generator -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="finger-print-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">UUID Generator</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Generate universally unique identifiers (UUIDs).</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Unit Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="cube-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Unit Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert various units (length, weight, temp, etc.).</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                <!-- Time Zone Converter -->
+                <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="earth-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Time Zone Converter</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Convert times between different time zones.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+                 <!-- Random Number/Password Generator -->
+                 <div class="tool-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="tool-icon"><ion-icon name="dice-outline"></ion-icon></div>
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800">Random Number/Password Gen</h3>
+                    <p class="text-sm text-gray-600 mb-4 h-10">Generate random numbers or secure passwords.</p>
+                    <a href="#" class="btn-primary text-sm py-2 px-4 inline-block">Use Tool</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-800 text-gray-300 py-12 md:py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <a href="#" class="logo-font text-white text-xl">Tools Wonder</a>
+                    <p class="mt-2 text-sm text-gray-400">Simplifying your digital life.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white mb-3">Contact Us</h5>
+                    <a href="mailto:allseotools83@gmail.com" class="text-gray-400 hover:text-blue-400">allseotools83@gmail.com</a>
+                    <p class="text-xs text-gray-500 mt-1">(Email only)</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white mb-3">Quick Links</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Terms of Use</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-500">
+                © <span id="currentYear"></span> ToolzStudio. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Basic live search functionality (conceptual)
+        const searchInput = document.getElementById('tool-search');
+        const toolCards = document.querySelectorAll('.tool-card');
+
+        searchInput.addEventListener('keyup', function(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            toolCards.forEach(card => {
+                const toolName = card.querySelector('h3').textContent.toLowerCase();
+                const toolDescription = card.querySelector('p').textContent.toLowerCase();
+                const section = card.closest('section');
+                
+                if (toolName.includes(searchTerm) || toolDescription.includes(searchTerm)) {
+                    card.style.display = ''; // Show card
+                    if (section) section.style.display = ''; // Ensure section is visible
+                } else {
+                    card.style.display = 'none'; // Hide card
+                }
+            });
+
+            // Optional: Hide sections if all their cards are hidden
+            document.querySelectorAll('main section').forEach(section => {
+                const visibleCardsInSection = section.querySelectorAll('.tool-card[style*="display: \'\'"]');
+                if (searchTerm && visibleCardsInSection.length === 0 && section.querySelectorAll('.tool-card').length > 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = '';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
